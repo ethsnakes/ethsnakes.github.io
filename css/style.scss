@@ -1,0 +1,213 @@
+/*
+ * Variables
+ */
+
+$color-magenta: #E9466B;
+$color-blue: #019DB0;
+$color-sky: #19D3C5;
+$color-green: #87B723;
+$color-apple: #CBE942;
+$color-darkgreen: #54821D;
+$color-clearorange: #C6753F;
+$color-clearyellow: #FFE3A1;
+$color-orange: #F08005;
+$color-yellow: #FADF03;
+
+$color-background: #95bdbf;
+$color-bar: #7fa1a3;
+$color-border: #7fa1a3;
+
+*, *:before, *:after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  vertical-align: top;
+}
+
+/**
+ * Tags
+ */
+
+html {
+  height: 100%;
+}
+
+body {
+  height: 100%;
+  font-family: 'PT Sans', sans-serif;
+  background-color: $color-background;
+}
+
+h1 {
+  padding: 20px 0;
+  border-bottom: 1px solid #ddd;
+}
+
+h2 {
+  font-size: 32px;
+}
+
+input {
+  width: 100%;
+}
+
+/**
+ * General design
+ */
+
+#wrapper {
+  max-width: 1500px;
+  margin: 0 auto;
+}
+
+#game-wrapper {
+  margin-right: 400px;
+  h1 {
+    text-align: center;
+    border: 0;
+    padding: 50px 0 25px;
+    color: #cce2e0;
+  }
+  #game {
+    #content {
+      canvas {
+        width: 100% !important;
+        margin-left: 0 !important;
+        margin-top: 0 !important;
+      }
+    }
+  }
+  #social {
+    background: $color-bar;
+    padding: 20px;
+    text-align: center;
+    .fa-caring {
+      font-size: 20px;
+      font-weight: bold;
+      margin-right: 20px;
+      height: 40px;
+      line-height: 40px;
+    }
+    .fa {
+      text-align: center;
+      padding-top: 10px;
+      height: 40px;
+      width: 40px;
+      font-size: 20px;
+      text-decoration: none;
+      border-radius: 5px;
+      margin-right: 10px;
+      color: white;
+      &:hover {
+        opacity: 0.7;
+      }
+      &.fa-facebook {
+        background: #3B5998;
+      }
+      &.fa-twitter {
+        background: #55ACEE;
+      }
+      &.fa-linkedin {
+        background: #007bb5;
+      }
+      &.fa-instagram {
+        background: #df6245;
+      }
+      &.fa-reddit {
+        background: #c1251b;
+      }
+    }
+  }
+  #links {
+    width: 100%;
+    padding: 30px 15px;
+    color: #222;
+    text-align: left;
+    font-size: 14px;
+    a {
+      color: #222;
+      text-decoration: underline;
+    }
+  }
+  #ethereum-images {
+    text-align: center;
+    border-top: 1px solid $color-border;
+    padding: 30px 0;
+    .logo {
+      margin: 0 15px;
+      height: 50px;
+    }
+  }
+}
+
+#stream {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 400px;
+  min-width: 400px;
+  height: 100%;
+  background: $color-background;
+  #stream-title {
+    margin: 0 10px 10px;
+    padding: 10px 10px 6px;
+    border-bottom: 1px solid #000;
+    font-size: 14px;
+    span {
+      display: inline-block;
+      &:nth-child(1) {
+        width: 132px;
+      }
+      &:nth-child(2) {
+        width: 100px;
+      }
+    }
+  }
+  #stream-content {
+    .stream-msg {
+      width: 400-20px;
+      padding: 10px;
+      margin: 5px 10px;
+      overflow: hidden;
+      font-size: 14px;
+      line-height: 26px;
+      border-radius: 3px;
+      &.result-true {
+        background: $color-yellow;
+        box-shadow: 0 0 2px;
+      }
+      &.result-false {
+      }
+      .eth-blockie {
+        display: inline-block;
+        height: 26px;
+        width: 26px;
+        border: 1px solid #444444;
+        border-radius: 12px;
+        margin-right: 10px;
+      }
+      .eth-address {
+        display: inline-block;
+        width: 100px;
+      }
+      .eth-msg {
+        display: inline-block;
+        width: 100px;
+      }
+      .eth-balancediff {
+        display: inline-block;
+        text-align: right;
+        font-weight: bold;
+      }
+    }
+  }
+}
+
+@media(max-width: 1000px) {
+  #game-wrapper {
+    margin-right: 0;
+  }
+  #stream {
+    display: none;
+  }
+}
