@@ -921,6 +921,7 @@ var BootScene = /** @class */ (function (_super) {
     }
     BootScene.prototype.preload = function () {
         this.load.image("background", "assets/background.jpg");
+        this.load.image("game-logo", "assets/game_logo.png");
     };
     BootScene.prototype.create = function () {
         BootScene.currentInstance = this;
@@ -984,6 +985,7 @@ var PreloadScene = /** @class */ (function (_super) {
         this.add.text(-100, -100, "abcdefg", { fontFamily: "BladiTwoCondensedComic4F-Bold", fontSize: 28, color: "#A6F834" });
         this.add.text(-100, -50, "abcdefg", { fontFamily: "BladiTwo4F", fontSize: 28, color: "#A6F834" });
         this.add.image(GameConstants_1.GameConstants.GAME_WIDTH / 2, GameConstants_1.GameConstants.GAME_HEIGHT / 2, "background");
+        this.add.image(GameConstants_1.GameConstants.GAME_WIDTH / 2, 325, "game-logo");
         var loadingText = this.add.text(10, GameConstants_1.GameConstants.GAME_HEIGHT - 55, "LOADING", { fontFamily: "BladiTwo4F", fontSize: "36px", color: "#FFFFFF", align: "center" });
         loadingText.scaleX = GameVars_1.GameVars.scaleX;
         this.progressBar = this.add.graphics();
@@ -1402,12 +1404,14 @@ var WaitingLayer_1 = __webpack_require__(/*! ./layers/WaitingLayer */ "./app/src
 var OutcomeLayer_1 = __webpack_require__(/*! ./layers/OutcomeLayer */ "./app/src/scenes/board-scene/layers/OutcomeLayer.ts");
 var InstructionsLayer_1 = __webpack_require__(/*! ./layers/InstructionsLayer */ "./app/src/scenes/board-scene/layers/InstructionsLayer.ts");
 var AudioManager_1 = __webpack_require__(/*! ../../AudioManager */ "./app/src/AudioManager.ts");
+var SplashLayer_1 = __webpack_require__(/*! ./SplashLayer */ "./app/src/scenes/board-scene/SplashLayer.ts");
 var BoardScene = /** @class */ (function (_super) {
     __extends(BoardScene, _super);
     function BoardScene() {
         return _super.call(this, "BoardScene") || this;
     }
     BoardScene.prototype.create = function () {
+        this.f = 0;
         BoardScene.currentInstance = this;
         GameManager_1.GameManager.setCurrentScene(this);
         BoardManager_1.BoardManager.init();
@@ -1421,12 +1425,26 @@ var BoardScene = /** @class */ (function (_super) {
         this.add.existing(this.boardContainer);
         this.gui = new GUI_1.GUI(this);
         this.add.existing(this.gui);
-        this.cameras.main.fadeIn(300, 40, 49, 78);
+        if (BoardScene.firstInstantiation) {
+            this.splashLayer = new SplashLayer_1.SplashLayer(this);
+            this.add.existing(this.splashLayer);
+        }
+        else {
+            this.splashLayer = null;
+            this.cameras.main.fadeIn(300, 40, 49, 78);
+        }
         // TODO: BORRAR ESTO
         // this.removeWaitingLayer();
         AudioManager_1.AudioManager.playSound("music", true, .5);
     };
     BoardScene.prototype.update = function () {
+        if (this.splashLayer) {
+            this.f++;
+            if (this.f === 60) {
+                this.splashLayer.disappear();
+                this.splashLayer = null;
+            }
+        }
         if (this.waitingLayer) {
             this.waitingLayer.update();
         }
@@ -1559,6 +1577,7 @@ var BoardScene = /** @class */ (function (_super) {
             frameRate: 12
         });
     };
+    BoardScene.firstInstantiation = true;
     return BoardScene;
 }(Phaser.Scene));
 exports.BoardScene = BoardScene;
@@ -1840,6 +1859,59 @@ var Snake = /** @class */ (function (_super) {
     return Snake;
 }(Phaser.GameObjects.Container));
 exports.Snake = Snake;
+
+
+/***/ }),
+
+/***/ "./app/src/scenes/board-scene/SplashLayer.ts":
+/*!***************************************************!*\
+  !*** ./app/src/scenes/board-scene/SplashLayer.ts ***!
+  \***************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var GameConstants_1 = __webpack_require__(/*! ../../GameConstants */ "./app/src/GameConstants.ts");
+var SplashLayer = /** @class */ (function (_super) {
+    __extends(SplashLayer, _super);
+    function SplashLayer(scene) {
+        var _this = _super.call(this, scene) || this;
+        var background = new Phaser.GameObjects.Image(_this.scene, GameConstants_1.GameConstants.GAME_WIDTH / 2, GameConstants_1.GameConstants.GAME_HEIGHT / 2, "background");
+        _this.add(background);
+        var gameLogo = new Phaser.GameObjects.Image(_this.scene, GameConstants_1.GameConstants.GAME_WIDTH / 2, 325, "game-logo");
+        _this.add(gameLogo);
+        return _this;
+    }
+    SplashLayer.prototype.disappear = function () {
+        this.scene.tweens.add({
+            targets: this,
+            alpha: 0,
+            ease: Phaser.Math.Easing.Cubic.Out,
+            duration: 450,
+            onComplete: function () {
+                this.destroy();
+            },
+            onCompleteScope: this
+        });
+    };
+    return SplashLayer;
+}(Phaser.GameObjects.Container));
+exports.SplashLayer = SplashLayer;
 
 
 /***/ }),
