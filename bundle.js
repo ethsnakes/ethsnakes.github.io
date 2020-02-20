@@ -229,7 +229,7 @@ var BoardManager_1 = __webpack_require__(/*! ./scenes/board-scene/BoardManager *
 var Web3 = __webpack_require__(/*! web3 */ "./node_modules/web3/src/index.js");
 var Blockies = __webpack_require__(/*! ethereum-blockies */ "./node_modules/ethereum-blockies/blockies.js");
 var SnakesAndLaddersArtifact = __webpack_require__(/*! ../../build/contracts/SnakesAndLadders.json */ "./build/contracts/SnakesAndLadders.json");
-var ContractAddress = "0x44534e16637dc1c399BafB6B43047A56Dd2aAE3D";
+var ContractAddress = "0x016474f84d04649a57d4ed6212418a19194f9c26";
 var Dapp = /** @class */ (function () {
     /**
      * Constructor will help the Dapp class to communicate with the game engine
