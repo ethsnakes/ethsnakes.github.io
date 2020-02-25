@@ -700,18 +700,14 @@ var GameManager = /** @class */ (function () {
         // le restamos la apuesta al balance
         GameVars_1.GameVars.balance -= GameVars_1.GameVars.bet;
         GameVars_1.GameVars.balance = Math.floor(GameVars_1.GameVars.balance * 100) / 100;
-        BoardScene_1.BoardScene.currentInstance.onTransactionExecuted();
+        BoardScene_1.BoardScene.currentInstance.onTransactionConfirmed();
     };
     GameManager.onSeedAvailable = function (seed) {
         GameVars_1.GameVars.seed = seed;
-        console.log("seed es:", GameVars_1.GameVars.seed);
-        BoardManager_1.BoardManager.startGame();
+        // console.log("seed es:", GameVars.seed);
+        BoardManager_1.BoardManager.onSeedAvailable();
     };
     GameManager.matchOver = function () {
-        if (GameVars_1.GameVars.winner === GameConstants_1.GameConstants.PLAYER) {
-            GameVars_1.GameVars.balance += 2 * GameVars_1.GameVars.bet;
-            GameVars_1.GameVars.balance = Math.floor(GameVars_1.GameVars.balance * 100) / 100;
-        }
         BoardScene_1.BoardScene.currentInstance.matchOver();
     };
     GameManager.onClickAddFunds = function () {
@@ -1274,8 +1270,10 @@ var BoardManager = /** @class */ (function () {
         GameVars_1.GameVars.turns = 0;
         GameVars_1.GameVars.matchOver = false;
         GameVars_1.GameVars.paused = false;
+        GameVars_1.GameVars.hasGameStarted = false;
     };
-    BoardManager.startGame = function () {
+    BoardManager.onSeedAvailable = function () {
+        GameVars_1.GameVars.hasGameStarted = true;
         // se lanza un dado para saber quien sale
         GameVars_1.GameVars.dapp.rollDice(GameVars_1.GameVars.seed, GameVars_1.GameVars.turns);
     };
@@ -1283,6 +1281,9 @@ var BoardManager = /** @class */ (function () {
         GameVars_1.GameVars.dapp.rollDice(GameVars_1.GameVars.seed, GameVars_1.GameVars.turns);
     };
     BoardManager.onDiceResultFetched = function (value) {
+        if (!GameVars_1.GameVars.hasGameStarted) {
+            return;
+        }
         if (GameVars_1.GameVars.turns === 0) {
             if (value === 1 || value === 2) {
                 GameVars_1.GameVars.currentTurn = GameConstants_1.GameConstants.PLAYER;
@@ -1503,12 +1504,12 @@ var BoardScene = /** @class */ (function (_super) {
         this.waitingLayer = new WaitingLayer_1.WaitingLayer(this);
         this.add.existing(this.waitingLayer);
     };
-    BoardScene.prototype.onTransactionExecuted = function () {
+    BoardScene.prototype.onTransactionConfirmed = function () {
         if (this.waitingLayer) {
             this.waitingLayer.destroy();
             this.waitingLayer = null;
             this.gui.enableButtons();
-            this.hud.onTransactionExecuted();
+            this.hud.onTransactionConfirmed();
         }
     };
     BoardScene.prototype.startMatch = function () {
@@ -2436,15 +2437,15 @@ var BalanceContainer = /** @class */ (function (_super) {
     BalanceContainer.prototype.onBalanceAvailable = function () {
         this.balanceLabel.text = GameVars_1.GameVars.balance.toString() + " ETH";
     };
-    BalanceContainer.prototype.onTransactionExecuted = function () {
+    BalanceContainer.prototype.onTransactionConfirmed = function () {
         this.balanceLabel.text = GameVars_1.GameVars.balance.toString() + " ETH";
     };
     BalanceContainer.prototype.onPlayerVictory = function () {
-        var balanceBeforeWinning = GameVars_1.GameVars.balance - 2 * GameVars_1.GameVars.bet;
-        balanceBeforeWinning = Math.floor(balanceBeforeWinning * 100) / 100;
-        this.balanceLabel.text = balanceBeforeWinning.toString() + " ETH";
+        this.balanceLabel.text = GameVars_1.GameVars.balance.toString() + " ETH";
         this.scene.time.delayedCall(3000, function () {
-            var newBalanceLabel = new Phaser.GameObjects.Text(this.scene, 42 * GameVars_1.GameVars.scaleX, -15 + 30, GameVars_1.GameVars.balance.toString() + " ETH", { fontFamily: "BladiTwoCondensedComic4F-Bold", fontSize: "28px", color: "#7A431C" });
+            var newBalance = GameVars_1.GameVars.balance + 2 * GameVars_1.GameVars.bet;
+            newBalance = Math.floor(newBalance * 100) / 100;
+            var newBalanceLabel = new Phaser.GameObjects.Text(this.scene, 42 * GameVars_1.GameVars.scaleX, -15 + 30, newBalance.toString() + " ETH", { fontFamily: "BladiTwoCondensedComic4F-Bold", fontSize: "28px", color: "#7A431C" });
             newBalanceLabel.scaleX = GameVars_1.GameVars.scaleX;
             newBalanceLabel.alpha = 0;
             this.add(newBalanceLabel);
@@ -2522,8 +2523,8 @@ var HUD = /** @class */ (function (_super) {
         this.visible = true;
         this.balanceContainer.onBalanceAvailable();
     };
-    HUD.prototype.onTransactionExecuted = function () {
-        this.balanceContainer.onTransactionExecuted();
+    HUD.prototype.onTransactionConfirmed = function () {
+        this.balanceContainer.onTransactionConfirmed();
     };
     HUD.prototype.playerClimbsLadder = function () {
         if (this.extraDiceImage) {
@@ -3161,7 +3162,7 @@ var WaitingLayer = /** @class */ (function (_super) {
         infoLabelSmartContract.setOrigin(.5);
         infoLabelSmartContract.scaleX = GameVars_1.GameVars.scaleX;
         scaledItemsContainer.add(infoLabelSmartContract);
-        var style = { fontFamily: "RussoOne", fontSize: "22px", color: "#00FFFF" };
+        var style = { fontFamily: "RussoOne", fontSize: "32px", color: "#00FFFF" };
         var styleOver = { fill: "#FF00FF" };
         var transactionHashShortened = GameVars_1.GameVars.transactionHash.slice(0, 6) + "..." + GameVars_1.GameVars.transactionHash.slice(GameVars_1.GameVars.transactionHash.length - 5, GameVars_1.GameVars.transactionHash.length);
         var smartContractLabel = new Phaser.GameObjects.Text(_this.scene, 0, 560, transactionHashShortened, { fontFamily: "BladiTwoCondensedComic4F-Bold", fontSize: "32px", color: "#00FFFF" });
